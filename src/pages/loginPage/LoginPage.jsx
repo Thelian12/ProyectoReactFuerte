@@ -3,7 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom"; // Link para enlazar a otras paginas se usa link no a
 
 
-
 function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -60,10 +59,10 @@ function LoginPage() {
 
         {/* Enlaces */}
         <div className="text-center mt-3">
-          <a href="#">¿Olvidaste tu contraseña?</a>
+          <Link to="/forgot">¿Olvidaste tu contraseña?</Link>
         </div>
         <div className="text-center mt-2">
-          <a href="#">Crear nueva cuenta</a>
+          <Link to="/register">Crear nueva cuenta</Link>
         </div>
       </div>
     </div>
