@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 function Contador() { 
     const [count, setCount] = useState(0);
@@ -123,6 +124,8 @@ function Contador() {
             >
                 Cambiar padding
             </button>
+
+            <Link to="/">Volver atrás</Link>
 
 
         </div>

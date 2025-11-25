@@ -8,7 +8,7 @@ import DashboardPage from "./pages/dashboard/DashboardPage.jsx";
 /*Rutas para practicar hooks */
 import HomeHooks from "./playground/HomeHooks.jsx";
 import HookUseState from "./playground/HookUseState.jsx";
-// import HookUseNavigate from "./playground/HookUseNavigate.jsx";
+import HookUseNavigate from "./playground/HookUseNavigate.jsx";
 
 function App() {
   return (
@@ -25,8 +25,8 @@ function App() {
 
       /*Rutas de playground para hooks*/
       <Route path="/hooks" element={<HomeHooks />} />
-      <Route path="/usestate" element={<HookUseState />} />
-      {/* <Route path="/usenavigate" element={<HookUseNavigate />} /> */}
+      <Route path="/hooks/usestate" element={<HookUseState />} />
+      <Route path="/hooks/usenavigate" element={<HookUseNavigate />} /> 
 
     </Routes>
     </BrowserRouter>

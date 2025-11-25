@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function HomeHooks() {
 
 console.log("HomeHooks está cargando...");
@@ -85,7 +87,9 @@ console.log("HomeHooks está cargando...");
                     {hooks.map((item, index) => (
                         <tr key={index}>
                             <td>{item.hook}</td>
-                            <td>{item.ruta}</td>
+                            <td><Link to={item.ruta} className="btn btn-primary btn-sm">Ver Ejemplo</Link></td>
+
+                            
                             <td>{item.descripcion}</td>
                             <td>{item.categoria}</td>
                         </tr>
