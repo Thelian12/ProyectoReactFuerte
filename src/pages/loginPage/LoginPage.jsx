@@ -1,70 +1,175 @@
 import { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { Link } from "react-router-dom"; // Link para enlazar a otras paginas se usa link no a
+import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
+// Firebase
+import { auth, db } from "../../firebase";
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 function LoginPage() {
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // Login con correo y contraseña
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { email, password } = form;
+
+    if (!email || !password) {
+      Swal.fire({
+        icon: "warning",
+        title: "Campos incompletos",
+        text: "Por favor ingresa tu correo y contraseña.",
+      });
+      return;
+    }
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const token = await userCredential.user.getIdToken();
+      localStorage.setItem("token", token);
+
+      Swal.fire({
+        icon: "success",
+        title: "Bienvenido",
+        text: "Inicio de sesión exitoso.",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+
+      navigate("/dashboard");
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error al iniciar sesión",
+        text: "Correo o contraseña incorrectos.",
+      });
+    }
+  };
+
+  // Login con Google
+  const handleGoogleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Guardar usuario en Firestore si no existe
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(
+        userRef,
+        {
+          uid: user.uid,
+          name: user.displayName,
+          email: user.email,
+          createdAt: new Date(),
+        },
+        { merge: true }
+      );
+
+      Swal.fire({
+        icon: "success",
+        title: "Bienvenido",
+        text: `Hola ${user.displayName}`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Error de Google Sign-In",
+        text: error.message,
+      });
+    }
+  };
 
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100">
-      <div className="card shadow p-4" style={{ width: "350px" }}>
-        <h3 className="text-center mb-4">Iniciar Sesión</h3>
+      <div className="card p-4 shadow" style={{ width: "380px" }}>
+        <h3 className="text-center mb-3">Iniciar Sesión</h3>
 
-        {/* Input de email */}
-        <div className="mb-3">
-          <label className="form-label">Correo electrónico</label>
-          <input type="email" className="form-control" placeholder="email@example.com" />
-        </div>
-
-        {/* Input de contraseña con icono de ojo */}
-        <div className="mb-3">
-          <label className="form-label">Contraseña</label>
-          <div className="input-group">
+        <form onSubmit={handleSubmit}>
+          {/* Email */}
+          <div className="mb-3">
+            <label className="form-label">Correo electrónico</label>
             <input
-              type={showPassword ? "text" : "password"}
+              type="email"
+              name="email"
               className="form-control"
-              placeholder="Ingresa tu contraseña"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="ejemplo@gmail.com"
             />
-            <button
-              className="btn btn-outline-secondary"
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </button>
           </div>
-        </div>
 
-        {/* Recordar */}
-        <div className="form-check mb-3">
-          <input type="checkbox" className="form-check-input" id="remember" />
-          <label htmlFor="remember" className="form-check-label">
-            Recordarme
-          </label>
-        </div>
+          {/* Password */}
+          <div className="mb-3">
+            <label className="form-label">Contraseña</label>
+            <div className="input-group">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                className="form-control"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="****"
+              />
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                <i
+                  className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}
+                  style={{ fontSize: "1.2rem" }}
+                ></i>
+              </button>
+            </div>
+          </div>
+
+          <button className="btn btn-primary w-100">Ingresar</button>
+        </form>
         
 
-        {/* Botón de login */}
-        <button className="btn btn-primary w-100 mb-3">Ingresar</button>
+        {/* Sección de enlaces y Google Sign-In */}
+<div className="text-center mt-3 d-flex flex-column gap-2">
+  {/* Link a recuperar contraseña */}
+  <Link to="/forgot" className="text-decoration-none">
+    ¿Olvidaste tu contraseña?
+  </Link>
 
-        {/* Botón de Google */}
-        <button className="btn btn-light border w-100 d-flex align-items-center justify-content-center gap-2">
-          <img
-            src="https://developers.google.com/identity/images/g-logo.png"
-            alt="Google logo"
-            width="20"
-          />
-          Continuar con Google
-        </button>
+  {/* Link a crear cuenta */}
+  <Link to="/register" className="text-decoration-none">
+    Crear una cuenta
+  </Link>
 
-        {/* Enlaces */}
-        <div className="text-center mt-3">
-          <Link to="/forgot">¿Olvidaste tu contraseña?</Link>
-        </div>
-        <div className="text-center mt-2">
-          <Link to="/register">Crear nueva cuenta</Link>
-        </div>
+  {/* Botón de Google */}
+  <button
+    className="btn btn-outline-danger mt-2"
+    onClick={handleGoogleSignIn} // Función que maneja login con Google
+  >
+    <i className="bi bi-google me-2"></i> Iniciar sesión con Google
+  </button>
+</div>
+
       </div>
     </div>
   );

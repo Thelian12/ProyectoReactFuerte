@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+
 function Sidebar() {
   return (
     <div
@@ -25,6 +26,8 @@ function Sidebar() {
         <li className="nav-item mb-2">
           <Link className="nav-link text-white" to="/reset">Reset</Link>
         </li>
+
+        
       </ul>
     </div>
   );

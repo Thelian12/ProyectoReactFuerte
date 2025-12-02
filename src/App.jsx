@@ -4,6 +4,9 @@ import RegisterPage from "./pages/registerPage/RegisterPage.jsx";
 import ForgotPage from "./pages/forgotPage/ForgotPage.jsx";
 import ResetPage from "./pages/resetPage/Resetpage.jsx";
 import DashboardPage from "./pages/dashboard/DashboardPage.jsx";
+import ProtectedRoute from "./components/protectedRoute/ProtectedRoute.jsx"
+import ListUsers from "./pages/listUsers/ListUsers";
+
 
 /*Rutas para practicar hooks */
 import HomeHooks from "./playground/HomeHooks.jsx";
@@ -20,13 +23,15 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot" element={<ForgotPage />} />
       <Route path="/reset" element={<ResetPage />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
-
+      <Route path="/dashboard" element={<ProtectedRoute> <DashboardPage /> </ProtectedRoute>} />
+      <Route path="/list" element={<ListUsers />} 
+/>
 
       /*Rutas de playground para hooks*/
       <Route path="/hooks" element={<HomeHooks />} />
       <Route path="/hooks/usestate" element={<HookUseState />} />
       <Route path="/hooks/usenavigate" element={<HookUseNavigate />} /> 
+       
 
     </Routes>
     </BrowserRouter>

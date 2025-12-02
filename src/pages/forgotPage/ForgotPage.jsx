@@ -1,39 +1,63 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../../firebase";  // AJUSTA la ruta según tu proyecto
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 function ForgotPage() {
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+
+      Swal.fire({
+        icon: "success",
+        title: "Correo enviado",
+        text: "Revisa tu correo para restablecer tu contraseña.",
+      }).then(() => {
+        navigate("/"); // ⬅️ Redirección al login
+      });
+
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No pudimos enviar el correo. Verifica que esté registrado.",
+      });
+    }
+  };
 
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100">
-      <div className="card shadow p-4" style={{ width: "350px" }}>
-        <h3 className="text-center mb-3">Restablecer contraseña</h3>
+      <div className="card p-4 shadow" style={{ width: "380px" }}>
+        <h3 className="text-center mb-3">Recuperar Contraseña</h3>
 
-        <p className="text-muted text-center" style={{ fontSize: "14px" }}>
-          Ingresa tu correo y te enviaremos un enlace para recuperar tu cuenta.
+        <p className="text-muted text-center">
+          Ingresa tu correo y te enviaremos un enlace para recuperar tu contraseña.
         </p>
 
-        {/* Input del correo */}
-        <div className="mb-3">
-          <label className="form-label">Correo electrónico</label>
-          <input
-            type="email"
-            className="form-control"
-            placeholder="email@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label className="form-label">Correo electrónico</label>
+            <input 
+              type="email"
+              className="form-control"
+              placeholder="ejemplo@gmail.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        {/* Botón */}
-        <button className="btn btn-primary w-100 mb-3">
-          Enviar enlace
-        </button>
+          <button className="btn btn-warning w-100">Enviar enlace</button>
+        </form>
 
-        {/* Volver */}
-        <div className="text-center">
-          <Link to="/">Volver al inicio de sesión</Link>
+        <div className="text-center mt-3">
+          <a href="/">Volver al login</a>
         </div>
       </div>
     </div>
